@@ -1,13 +1,42 @@
 import py7zr
-pathfile = "./proyecto1/traces.7z"
+import os
+from pshare import * 
 
-with py7zr.SevenZipFile(pathfile,'r') as trace_fh:
-    trace_fh.extractall(path="./proyecto1/")
-    for line in trace_fh:
-        line = line.rstrip()
-        print(line)
-# with py7zr.SevenZipFile(pathfile,'r') as trace_fh:
-#     for line in trace_fh:
-#         line = line.rstrip()
-#         PC,result = line.split(" ")
-#         print(PC, result)
+
+pathfile = "./proyecto1/traces.7z"
+trace_path = "./proyecto1/traces/"
+
+# Check if traces folder exists 
+# Open the 7z file and extract the traces
+if(not os.path.exists(trace_path)):
+    with py7zr.SevenZipFile(pathfile,'r') as trace_fh:
+        trace_fh.extractall(path="./proyecto1/")
+
+# List the traces
+traces = os.listdir(trace_path)
+traces.sort()
+
+# Create the predictor
+predictor = pshared(16, 16)
+predictor.print_info()
+
+# Iterate over the traces
+for trace in traces:
+    DEBUG = False
+    if(DEBUG): 
+        i = 0
+    with open(trace_path + trace, 'r') as trace_fh:
+        for line in trace_fh:
+            line = line.rstrip()
+            PC,result = line.split(" ")
+            result = "T" if result == "1" else "N"
+
+            PC = int(PC, 16)
+            prediction = predictor.predict(PC)
+            predictor.update(PC, result, prediction)
+
+            if(DEBUG):
+                i += 1
+                if i == 100000:
+                    break
+predictor.print_stats()
