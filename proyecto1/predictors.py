@@ -3,11 +3,10 @@ import os
 from pshare import * 
 from gshare import *
 from tournament import *
-from x_predictor import *
+from perceptron_predictor import PerceptronPredictor  # Importing Perceptron Predictor
 
-
-pathfile = "./proyecto1/traces.7z"
-trace_path = "./proyecto1/traces/"
+pathfile = "traces.7z"
+trace_path = "traces/"
 
 # Check if traces folder exists 
 # Open the 7z file and extract the traces
@@ -22,11 +21,12 @@ traces.sort()
 # Create the predictor
 print("------- Menu de predictores -----")
 print("1. Pshare",
-        "2. Gshre",
-        "3. Tournament",
-        "4. X predictor",
-        "5. Terminar programa",
-        sep='\n')
+      "2. Gshre",
+      "3. Tournament",
+      "4. Perceptron Predictor",  # Added Perceptron Predictor option
+      "5. Terminar programa",
+      sep='\n')
+
 opcion = int(input("Ingrese una opción: "))
 if(opcion == 1):
     predictor = pshare(10, 10)
@@ -35,8 +35,7 @@ elif(opcion == 2):
 elif(opcion == 3):
     predictor = tournament(10, 10)
 elif(opcion == 4):
-    pass
-    # predictor = x_predictor(10, 10)
+    predictor = PerceptronPredictor(history_length=8, num_weights=8)  # Initialize perceptron predictor
 elif(opcion == 5):
     print("\nPrograma finalizado...")
     exit()
@@ -53,15 +52,11 @@ for trace in traces:
     with open(trace_path + trace, 'r') as trace_fh:
         for line in trace_fh:
             line = line.rstrip()
-            PC,result = line.split(" ")
-            result = "T" if result == "1" else "N"
+            PC, result = line.split(" ")
+            # Convert '1' to 1 (Taken) and '0' to 0 (Not Taken)
+            result = 1 if result == "1" else 0
 
             PC = int(PC, 16)
             prediction = predictor.predict(PC)
             predictor.update(PC, result, prediction)
-
-            if(DEBUG):
-                i += 1
-                if i == 10:
-                    break
 predictor.print_results()
