@@ -12,6 +12,7 @@ class tournament:
         self.correct_predictions = 0
         self.correct_predictions_rate = 0
 
+        self.btb = []
         #
         self.tournament_selection = 1
             ## 00: 0 -> Strong Pshare
@@ -68,6 +69,9 @@ class tournament:
         if result == prediction:
             self.correct_predictions += 1
         self.total_predictions += 1
+
+        # Guardar un PC inventado
+        self.btb.push(f"{PC[:len(PC)-1]}0")
 
         # Actualizamos los predictores
         self.pshare.update(PC, result, prediction)

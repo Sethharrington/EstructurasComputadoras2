@@ -6,6 +6,7 @@ class gshare:
         self.history_size = history_size
         self.max_index_global_history = 2**self.history_size
 
+        self.btb = []
         #First index with PC, second index with GHR
         self.branch_table = [0] * (2 ** self.size_of_branch_table)
         # self.branch_table = [0 for i in range(self.size_of_branch_table)]
@@ -59,3 +60,6 @@ class gshare:
             self.global_history_reg = self.global_history_reg[-self.history_size+1:] + "0"
 
         self.amount_pcs += 1
+
+        # Guardar un PC inventado
+        self.btb.push(f"{PC[:len(PC)-1]}0")

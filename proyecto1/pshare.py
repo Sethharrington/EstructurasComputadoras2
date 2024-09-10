@@ -11,7 +11,9 @@ class pshare:
         self.history_size = history_size
         self.PC_Index = [0] * (2 ** self.PC_bits)
         self.local_history = [0] * (2 ** self.history_size)
-    
+
+        self.btb = []
+
     def print_predictor(self):
         print(f"\tTipo de predictor:\t\t\t{self.name}")
 
@@ -36,8 +38,15 @@ class pshare:
         self.correct_predictions = 100*(self.t_result_t+self.n_result_n)/self.amount_pcs
         ## Actualizamos los predictores
         if result == 'T':
-            self.local_history[self.PC_Index[self.PC_branch]] = self.local_history[self.PC_Index[self.PC_branch]] + 1 if self.local_history[self.PC_Index[self.PC_branch]] < 3 else 3
-            self.PC_Index[self.PC_branch] = ((self.PC_Index[self.PC_branch] << 1) | int((self.history_size-1)*'0'+'1', 2)) & int(self.history_size*'1', 2)
+            self.local_history[self.PC_Index[self.PC_branch]] = self.local_history[
+                self.PC_Index[self.PC_branch]] + 1 if self.local_history[self.PC_Index[self.PC_branch]] < 3 else 3
+            self.PC_Index[self.PC_branch] = ((self.PC_Index[
+                self.PC_branch] << 1) | int((self.history_size-1)*'0'+'1', 2)) & int(self.history_size*'1', 2)
         else:
-            self.local_history[self.PC_Index[self.PC_branch]] = self.local_history[self.PC_Index[self.PC_branch]] - 1 if self.local_history[self.PC_Index[self.PC_branch]] > 0 else 0
-            self.PC_Index[self.PC_branch] = ((self.PC_Index[self.PC_branch] << 1) | int((self.history_size)*'0', 2)) & int(self.history_size*'1', 2)
+            self.local_history[self.PC_Index[self.PC_branch]] = self.local_history[
+                self.PC_Index[self.PC_branch]] - 1 if self.local_history[self.PC_Index[self.PC_branch]] > 0 else 0
+            self.PC_Index[self.PC_branch] = ((self.PC_Index[
+                self.PC_branch] << 1) | int((self.history_size)*'0', 2)) & int(self.history_size*'1', 2)
+        
+        # Guardar un PC inventado
+        self.btb.push(f"{PC[:len(PC)-1]}0")

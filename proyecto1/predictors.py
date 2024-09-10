@@ -2,6 +2,8 @@ import py7zr
 import os
 from pshare import * 
 from gshare import *
+from tournament import *
+from x_predictor import *
 
 
 pathfile = "./proyecto1/traces.7z"
@@ -18,12 +20,34 @@ traces = os.listdir(trace_path)
 traces.sort()
 
 # Create the predictor
-predictor = gshare(10, 10)
-predictor.print_predictor()
+print("------- Menu de predictores -----")
+print("1. Pshare",
+        "2. Gshre",
+        "3. Tournament",
+        "4. X predictor",
+        "5. Terminar programa",
+        sep='\n')
+opcion = int(input("Ingrese una opción: "))
+if(opcion == 1):
+    predictor = pshare(10, 10)
+elif(opcion == 2):
+    predictor = gshare(10, 10)
+elif(opcion == 3):
+    predictor = tournament(10, 10)
+elif(opcion == 4):
+    pass
+    # predictor = x_predictor(10, 10)
+elif(opcion == 5):
+    print("\nPrograma finalizado...")
+    exit()
+else:
+    print("Opción no válida")
+    exit()
 
+predictor.print_predictor()
 # Iterate over the traces
 for trace in traces:
-    DEBUG = False
+    DEBUG = True
     if(DEBUG): 
         i = 0
     with open(trace_path + trace, 'r') as trace_fh:
