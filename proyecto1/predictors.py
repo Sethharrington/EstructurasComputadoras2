@@ -1,6 +1,7 @@
 import py7zr
 import os
 from pshare import * 
+from gshare import *
 
 
 pathfile = "./proyecto1/traces.7z"
@@ -17,8 +18,8 @@ traces = os.listdir(trace_path)
 traces.sort()
 
 # Create the predictor
-predictor = pshared(16, 16)
-predictor.print_info()
+predictor = gshare(16, 16)
+predictor.print_predictor()
 
 # Iterate over the traces
 for trace in traces:
@@ -37,6 +38,6 @@ for trace in traces:
 
             if(DEBUG):
                 i += 1
-                if i == 100000:
+                if i == 10:
                     break
-predictor.print_stats()
+predictor.print_results()
