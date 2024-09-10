@@ -7,13 +7,13 @@ class gshare:
         self.max_index_global_history = 2**self.history_size
 
         #First index with PC, second index with GHR
-        self.branch_table = [0 for i in range(self.size_of_branch_table)]
+        self.branch_table = [0] * (2 ** self.size_of_branch_table)
+        # self.branch_table = [0 for i in range(self.size_of_branch_table)]
         if self.history_size > self.index_size:
-            print("El tamaño del registro de historia es mayor que los bits para indexar la tabla se limitará el registro a "+str(self.index_size)+ "bits")
             self.history_size = self.index_size
         self.global_history_reg = ""
-        for i in range(history_size):
-            self.global_history_reg += "0"
+        
+        self.global_history_reg = "0" * self.history_size
         self.amount_pcs = 0
         self.correct_predictions = 0
 
@@ -27,17 +27,17 @@ class gshare:
 
     def predict(self, PC):
         PC_index = int(PC) % self.size_of_branch_table
-        GHR_index = int(self.global_history_reg,2)
-        table_index = PC_index ^ GHR_index
+        global_history_table = int(self.global_history_reg,2)
+        table_index = PC_index ^ global_history_table
 
         branch_table_entry = self.branch_table[table_index]
 
-        return "N" if branch_table_entry in [0,1] else "T"
+        return "N" if branch_table_entry <= 1 else "T"
 
     def update(self, PC, result, prediction):
         PC_index = int(PC) % self.size_of_branch_table
-        GHR_index = int(self.global_history_reg,2)
-        table_index = PC_index ^ GHR_index
+        global_history_table = int(self.global_history_reg,2)
+        table_index = PC_index ^ global_history_table
 
         branch_table_entry = self.branch_table[table_index]
 
@@ -52,7 +52,7 @@ class gshare:
             updated_branch_table_entry = branch_table_entry + 1
         self.branch_table[table_index] = updated_branch_table_entry
 
-        #Update GHR
+        #Update global history register
         if result == "T":
             self.global_history_reg = self.global_history_reg[-self.history_size+1:] + "1"
         else:

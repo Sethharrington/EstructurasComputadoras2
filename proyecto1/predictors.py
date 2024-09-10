@@ -18,7 +18,7 @@ traces = os.listdir(trace_path)
 traces.sort()
 
 # Create the predictor
-predictor = gshare(16, 16)
+predictor = gshare(10, 10)
 predictor.print_predictor()
 
 # Iterate over the traces
