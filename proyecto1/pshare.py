@@ -1,27 +1,8 @@
-class pshare:
+from predictor import *
+class pshare(Predictor):
     def __init__(self, index_size, history_size):
-        self.name = "P-Shared"
+        super().__init__(index_size, history_size, "P-Shared")
 
-        # Contadores de predicciones
-        self.amount_pcs = 0
-        
-        ## Inicialización de variables
-        self.PC_branch = 0
-        self.PC_bits = index_size
-        self.history_size = history_size
-        self.PC_Index = [0] * (2 ** self.PC_bits)
-        self.local_history = [0] * (2 ** self.history_size)
-
-        self.btb = []
-
-    def print_predictor(self):
-        print(f"\tTipo de predictor:\t\t\t{self.name}")
-
-    def print_results(self):
-        print(f"""Resultados:
-        \t# branches:\t\t\t\t\t\t {self.amount_pcs}              
-        \tPredicciones correctas: {(100*(self.t_result_t+self.n_result_n)/self.amount_pcs):.3f}%""")
-        
     def predict(self, PC):
         ## Predicción
         ## Se toma el PC y se hace un and con una máscara de bits para obtener el índice
@@ -34,8 +15,11 @@ class pshare:
     def update(self, PC, result, prediction):
         self.PC_branch = int(PC) & int((self.PC_bits)*"1", 2)
         ## Actualizamos el contador de predicciones
+        if result == prediction:
+            self.correct_predictions += 1
+
         self.amount_pcs += 1    
-        self.correct_predictions = 100*(self.t_result_t+self.n_result_n)/self.amount_pcs
+
         ## Actualizamos los predictores
         if result == 'T':
             self.local_history[self.PC_Index[self.PC_branch]] = self.local_history[
@@ -49,4 +33,5 @@ class pshare:
                 self.PC_branch] << 1) | int((self.history_size)*'0', 2)) & int(self.history_size*'1', 2)
         
         # Guardar un PC inventado
-        self.btb.push(f"{PC[:len(PC)-1]}0")
+        if result == "T" and prediction == "T":
+            self.btb.append(PC-16)

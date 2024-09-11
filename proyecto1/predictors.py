@@ -21,12 +21,11 @@ traces.sort()
 # Create the predictor
 print("------- Menu de predictores -----")
 print("1. Pshare",
-      "2. Gshre",
-      "3. Tournament",
-      "4. Perceptron Predictor",  # Added Perceptron Predictor option
-      "5. Terminar programa",
-      sep='\n')
-
+        "2. Gshre",
+        "3. Tournament",
+        "4. X predictor",
+        "5. Terminar programa",
+        sep='\n')
 opcion = int(input("Ingrese una opción: "))
 if(opcion == 1):
     predictor = pshare(10, 10)
@@ -59,4 +58,9 @@ for trace in traces:
             PC = int(PC, 16)
             prediction = predictor.predict(PC)
             predictor.update(PC, result, prediction)
+
+            if(DEBUG):
+                i += 1
+                if i == 10:
+                    break
 predictor.print_results()

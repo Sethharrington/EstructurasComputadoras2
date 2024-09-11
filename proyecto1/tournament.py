@@ -8,7 +8,7 @@ class tournament:
         self.pshare = pshare(bits_to_index, local_history_size)
         self.gshare = gshare(bits_to_index, local_history_size)
         # Contadores de predicciones
-        self.total_predictions = 0
+        self.amount_pcs = 0
         self.correct_predictions = 0
         self.correct_predictions_rate = 0
 
@@ -29,16 +29,13 @@ class tournament:
         self.PC_Index = [0] * (2 ** self.PC_bits)
         self.local_history = [0] * (2 ** self.local_history_bits)
     
-    def print_info(self):
-        print("Parámetros del predictor:")
-        print("\tTipo de predictor:\t\t\tP-Shared")
+    def print_predictor(self):
+        print(f"\tTipo de predictor:\t\t\t{self.name}")
 
-    def print_stats(self):
-        print("Resultados de la simulación")
-        print("\t# branches:\t\t\t\t\t\t"+str(self.total_predictions))
-        self.correct_predictions_rate = 100*self.correct_predictions_rate/self.total_predictions
-        formatted_perc = "{:.3f}".format(self.correct_predictions)
-        print("\t% predicciones correctas:\t\t\t\t"+str(formatted_perc)+"%")
+    def print_results(self):
+        print(f"""Resultados:
+        \t# branches:\t\t\t\t\t\t {self.amount_pcs}              
+        \tPredicciones correctas: {(100*(self.correct_predictions)/self.amount_pcs):.3f}%""")
 
     def predict(self, PC):
         ## Predicción
@@ -53,25 +50,25 @@ class tournament:
         
     def update(self, PC, result, prediction):
         # Actualizamos la selección del predictor
-        if ((result == self.pshare_result and result == self.gshare_result)
-            or ((result != self.pshare_result and result != self.gshare_result))): # Si ambos predicen bien
+        if ((result == self.pshare_prediction and result == self.gshare_prediction)
+            or ((result != self.pshare_prediction and result != self.gshare_prediction))): # Si ambos predicen bien
                 self.tournament_selection = self.tournament_selection
-        elif (result == self.pshare_result and result != self.gshare_result): # Si pshare predice bien y gshare mal
+        elif (result == self.pshare_prediction and result != self.gshare_prediction): # Si pshare predice bien y gshare mal
             # Si el contador es 0 no se hace nada porque ya está en el estado de pshare
             if(self.tournament_selection > 0):
                 self.tournament_selection -=1 
-        elif (result != self.pshare_result and result == self.gshare_result): # Si pshare predice mal y gshare bien
+        elif (result != self.pshare_prediction and result == self.gshare_prediction): # Si pshare predice mal y gshare bien
             # Si el contador es 3 no se hace nada porque ya está en el estado de gshare
             if(self.tournament_selection < 3):
                 self.tournament_selection +=1
         
+        self.amount_pcs += 1  
         # Actualizamos el contador de predicciones
         if result == prediction:
             self.correct_predictions += 1
-        self.total_predictions += 1
 
         # Guardar un PC inventado
-        self.btb.push(f"{PC[:len(PC)-1]}0")
+        self.btb.append(PC-16)
 
         # Actualizamos los predictores
         self.pshare.update(PC, result, prediction)
