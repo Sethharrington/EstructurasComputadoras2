@@ -31,10 +31,16 @@ print("1. Pshare",
 opcion = int(input("Ingrese una opción: "))
 
 # Inicializar el predictor adecuado según la opción seleccionada
+if opcion in [1, 2, 3]:
+    btb_size = int(input("Ingrese el tamaño del BTB (por defecto 1024): ") or 1024)
+    pht_size = int(input("Ingrese el tamaño del PHT (por defecto 1024): ") or 1024)
+    step_by_step = input("¿Desea ver el modo paso a paso para BTB y PHT? (s/n): ").lower() == 's'
+
+# Inicializar el predictor seleccionado
 if (opcion == 1):
-    predictor = pshare(10, 10)
+    predictor = pshare(10, 10, btb_size, pht_size)
 elif (opcion == 2):
-    predictor = gshare(10, 10)
+    predictor = gshare(10, 10, btb_size, pht_size)
 elif (opcion == 3):
     predictor = tournament(10, 10)
 elif (opcion == 4):
@@ -45,11 +51,6 @@ elif (opcion == 5):
 else:
     print("Opción no válida.")
     exit()
-
-# Nueva selección de trace por parte del usuario
-print("\n--- Selección de Trace ---")
-print("Ingrese un número del 1 al 16 para seleccionar un trace específico, o ingrese 0 para ejecutar todos los traces.")
-trace_selection = int(input("Seleccione el trace: "))
 
 # Función para procesar los traces
 def procesar_traces(trace_selection):
@@ -67,8 +68,25 @@ def procesar_traces(trace_selection):
     
     return traces_to_run
 
+# Solicitar la selección de traces
+trace_selection = int(input("Ingrese el número del trace (1-16) o 0 para todos: "))
+
 # Obtener los traces a procesar
 traces_to_process = procesar_traces(trace_selection)
+
+# Función para mostrar información en modo paso a paso
+# Mostrar paso a paso el BTB y el PHT si es requerido
+def step_by_step_display(predictor, PC, result, prediction):
+    print(f"\nPC: {PC}, Resultado real: {'T' if result == 1 else 'N'}, Predicción: {prediction}")
+    print("BTB (Branch Target Buffer):", predictor.btb)
+    if isinstance(predictor, gshare):
+        print("PHT (Pattern History Table):", predictor.branch_table)
+        print("Registro de historia global:", predictor.global_history_reg)
+    elif isinstance(predictor, pshare):
+        print("PHT (Pattern History Table):", predictor.local_history)
+        print("Índices del PC:", predictor.PC_Index)
+
+    input("\nPresione Enter para continuar...\n")
 
 # Ejecutar el predictor para cada trace seleccionado
 for trace in traces_to_process:
@@ -81,5 +99,15 @@ for trace in traces_to_process:
             prediction = predictor.predict(PC)
             predictor.update(PC, result, prediction)
 
+            # Si el modo paso a paso está activado, mostrar información adicional
+            if step_by_step and (opcion == 1 or opcion == 2):
+                step_by_step_display(predictor, PC, result, prediction)
+
 # Imprimir resultados del predictor
 predictor.print_results()
+# Después de ejecutar los traces:
+if opcion == 1 or opcion == 2:
+    mostrar_btb_pht = input("¿Quieres ver el estado del BTB y PHT? (s/n): ").lower() == 's'
+    predictor.print_results(show_btb_pht=mostrar_btb_pht)
+else:
+    predictor.print_results()
