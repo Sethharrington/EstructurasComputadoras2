@@ -1,6 +1,6 @@
 import py7zr
 import os
-from pshare import * 
+from pshare import *
 from gshare import *
 from tournament import *
 from perceptron_predictor import PerceptronPredictor  # Importing Perceptron Predictor
@@ -10,7 +10,7 @@ trace_path = "traces/"
 
 # Check if traces folder exists 
 # Open the 7z file and extract the traces
-if(not os.path.exists(trace_path)):
+if (not os.path.exists(trace_path)):
     with py7zr.SevenZipFile(pathfile,'r') as trace_fh:
         trace_fh.extractall(path="./proyecto1/")
 
@@ -23,19 +23,19 @@ print("------- Menu de predictores -----")
 print("1. Pshare",
         "2. Gshre",
         "3. Tournament",
-        "4. X predictor",
+        "4. Perceptron",
         "5. Terminar programa",
         sep='\n')
 opcion = int(input("Ingrese una opción: "))
-if(opcion == 1):
+if (opcion == 1):
     predictor = pshare(10, 10)
-elif(opcion == 2):
+elif (opcion == 2):
     predictor = gshare(10, 10)
-elif(opcion == 3):
+elif (opcion == 3):
     predictor = tournament(10, 10)
-elif(opcion == 4):
+elif (opcion == 4):
     predictor = PerceptronPredictor(history_length=8, num_weights=8)  # Initialize perceptron predictor
-elif(opcion == 5):
+elif (opcion == 5):
     print("\nPrograma finalizado...")
     exit()
 else:
@@ -46,7 +46,7 @@ predictor.print_predictor()
 # Iterate over the traces
 for trace in traces:
     DEBUG = True
-    if(DEBUG): 
+    if (DEBUG):
         i = 0
     with open(trace_path + trace, 'r') as trace_fh:
         for line in trace_fh:
@@ -59,7 +59,7 @@ for trace in traces:
             prediction = predictor.predict(PC)
             predictor.update(PC, result, prediction)
 
-            if(DEBUG):
+            if (DEBUG):
                 i += 1
                 if i == 10:
                     break
