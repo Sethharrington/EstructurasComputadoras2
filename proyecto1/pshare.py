@@ -13,6 +13,9 @@ class pshare(Predictor):
         return "T" if self.local_history[self.PC_Index[self.PC_branch]] > 1 else "N"
         
     def update(self, PC, result, prediction):
+        # Convertir result a "T" o "N" para asegurar que el predictor funcione correctamente
+        result = "T" if result == 1 else "N"
+        
         self.PC_branch = int(PC) & int((self.PC_bits)*"1", 2)
         ## Actualizamos el contador de predicciones
         if result == prediction:

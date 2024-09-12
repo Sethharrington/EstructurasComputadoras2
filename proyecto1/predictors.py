@@ -3,80 +3,83 @@ import os
 from pshare import *
 from gshare import *
 from tournament import *
-from perceptron_predictor import PerceptronPredictor  # Importing Perceptron Predictor
+from perceptron_predictor import PerceptronPredictor  # Importando el predictor Perceptron
 
+# Variables de ruta
 pathfile = "traces.7z"
 trace_path = "traces/"
 
-# Check if traces folder exists 
-# Open the 7z file and extract the traces
+# Verificar si la carpeta de traces existe y extraer los archivos si es necesario
 if (not os.path.exists(trace_path)):
-    with py7zr.SevenZipFile(pathfile,'r') as trace_fh:
+    with py7zr.SevenZipFile(pathfile, 'r') as trace_fh:
         trace_fh.extractall(path="./proyecto1/")
 
-# List the traces
+# Listar los traces disponibles
 traces = os.listdir(trace_path)
 traces.sort()
 
-# Menu for Selecting Predictors
-print("------- Menu de predictores -----")
+# Menú para seleccionar predictores
+print("------- Menú de predictores -----")
 print("1. Pshare",
-        "2. Gshre",
-        "3. Tournament",
-        "4. Perceptron",
-        "5. Terminar programa",
-        sep='\n')
+      "2. Gshare",
+      "3. Tournament",
+      "4. Perceptron",
+      "5. Terminar programa",
+      sep='\n')
 
-# user to select an option
+# Usuario selecciona una opción
 opcion = int(input("Ingrese una opción: "))
-# Initialize the appropriate predictor based on the user's selection
+
+# Inicializar el predictor adecuado según la opción seleccionada
 if (opcion == 1):
-    # Initialize Pshare predictor with parameters
     predictor = pshare(10, 10)
 elif (opcion == 2):
-    # Initialize Gshare predictor with parameters
     predictor = gshare(10, 10)
 elif (opcion == 3):
-    # Initialize Tournament predictor with parameters
     predictor = tournament(10, 10)
 elif (opcion == 4):
-    # Initialize Perceptron predictor with parameters
-    predictor = PerceptronPredictor(history_length=8, num_weights=8)  # Initialize perceptron predictor
+    predictor = PerceptronPredictor(history_length=8, num_weights=8)
 elif (opcion == 5):
-    # Print a message and exit
     print("\nPrograma finalizado...")
-    exit() # Exit the program
+    exit()
 else:
-    print("Opción no válida")
-    exit() # Exit the program
+    print("Opción no válida.")
+    exit()
 
-# Print the configuration
-predictor.print_predictor()
-# Iterate over the traces
-for trace in traces:
-    DEBUG = True # Enable debugging mode
-    if (DEBUG):
-        i = 0 # Initialize a counter for debugging
+# Nueva selección de trace por parte del usuario
+print("\n--- Selección de Trace ---")
+print("Ingrese un número del 1 al 16 para seleccionar un trace específico, o ingrese 0 para ejecutar todos los traces.")
+trace_selection = int(input("Seleccione el trace: "))
 
-    # Open the current trace file in read mode
+# Función para procesar los traces
+def procesar_traces(trace_selection):
+    # Si el usuario selecciona 0, usar todos los traces
+    if trace_selection == 0:
+        traces_to_run = traces
+    else:
+        # Si selecciona un número entre 1 y 16, seleccionamos el trace correspondiente
+        trace_number = f"trace_{str(trace_selection).zfill(2)}"
+        if trace_number in traces:
+            traces_to_run = [trace_number]
+        else:
+            print(f"El trace {trace_number} no existe.")
+            exit()
+    
+    return traces_to_run
+
+# Obtener los traces a procesar
+traces_to_process = procesar_traces(trace_selection)
+
+# Ejecutar el predictor para cada trace seleccionado
+for trace in traces_to_process:
     with open(trace_path + trace, 'r') as trace_fh:
-        # Process each line in the trace file
         for line in trace_fh:
-            line = line.rstrip()# Remove any trailing whitespace characters
-            # Split the line into the program counter (PC) and the branch result
-            PC, result = line.split(" ") 
-            # Convert '1' to 1 (Taken) and '0' to 0 (Not Taken)
-            result = 1 if result == "1" else 0
-            # Convert the program counter from hexadecimal to an integer
+            line = line.rstrip()
+            PC, result = line.split(" ")
+            result = int(result)  # Mantener 1 para Taken y 0 para Not Taken
             PC = int(PC, 16)
-            # Predict the outcome of the branch using the selected predictor
             prediction = predictor.predict(PC)
-            # Update the predictor with the actual outcome and the prediction
             predictor.update(PC, result, prediction)
-             # If debugging is enabled, break after 10 iterations
-            if (DEBUG):
-                i += 1
-                if i == 10:
-                    break
-# Print the final results or statistics of the predictor's performance
+
+# Imprimir resultados del predictor
 predictor.print_results()

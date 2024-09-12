@@ -22,7 +22,7 @@ class Predictor:
         print(f"""Resultados:
         \t# branches:\t\t\t\t\t\t {self.amount_pcs}              
         \tPredicciones correctas: {(100*(self.correct_predictions)/self.amount_pcs):.3f}%
-        \tBTB: {self.btb}""")
+        \t""")
         
     def predict(self, PC):
         pass    

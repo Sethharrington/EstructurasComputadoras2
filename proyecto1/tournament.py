@@ -1,7 +1,6 @@
 from pshare import *
 from gshare import *
 
-
 class tournament:
     def __init__(self, bits_to_index, local_history_size):
         self.name = "tournament"
@@ -15,10 +14,10 @@ class tournament:
         self.btb = []
         #
         self.tournament_selection = 1
-            ## 00: 0 -> Strong Pshare
-            ## 01: 1 -> Weak Pshare
-            ## 10: 2 -> Weak Gshare
-            ## 11: 3 -> Strong Gshare
+        ## 00: 0 -> Strong Pshare
+        ## 01: 1 -> Weak Pshare
+        ## 10: 2 -> Weak Gshare
+        ## 11: 3 -> Strong Gshare
         self.pshare_prediction = ''
         self.gshare_prediction = ''
         
@@ -42,28 +41,30 @@ class tournament:
         self.pshare_prediction = self.pshare.predict(PC)
         self.gshare_prediction = self.gshare.predict(PC)
 
-        # Si el contador es 0 o 1 se retorna la predicción de pshare de lo contrario se retorna la predicción de gshare
+        # Si el contador es 0 o 1 se retorna la predicción de pshare, de lo contrario se retorna la predicción de gshare
         if self.tournament_selection <= 1:
             return self.pshare_prediction
         else:
             return self.gshare_prediction
         
     def update(self, PC, result, prediction):
+        # Convertimos result para asegurarnos de que es 'T' o 'N'
+        result = "T" if result == 1 else "N"
+        
         # Actualizamos la selección del predictor
         if ((result == self.pshare_prediction and result == self.gshare_prediction)
-            or ((result != self.pshare_prediction and result != self.gshare_prediction))): # Si ambos predicen bien
-                self.tournament_selection = self.tournament_selection
-        elif (result == self.pshare_prediction and result != self.gshare_prediction): # Si pshare predice bien y gshare mal
-            # Si el contador es 0 no se hace nada porque ya está en el estado de pshare
-            if(self.tournament_selection > 0):
-                self.tournament_selection -=1 
-        elif (result != self.pshare_prediction and result == self.gshare_prediction): # Si pshare predice mal y gshare bien
-            # Si el contador es 3 no se hace nada porque ya está en el estado de gshare
-            if(self.tournament_selection < 3):
-                self.tournament_selection +=1
+            or (result != self.pshare_prediction and result != self.gshare_prediction)):  # Si ambos predicen bien o mal
+            # No se cambia el estado
+            self.tournament_selection = self.tournament_selection
+        elif result == self.pshare_prediction and result != self.gshare_prediction:  # Si pshare predice bien y gshare mal
+            if self.tournament_selection > 0:
+                self.tournament_selection -= 1
+        elif result != self.pshare_prediction and result == self.gshare_prediction:  # Si pshare predice mal y gshare bien
+            if self.tournament_selection < 3:
+                self.tournament_selection += 1
         
         self.amount_pcs += 1  
-        # Actualizamos el contador de predicciones
+        # Actualizamos el contador de predicciones correctas
         if result == prediction:
             self.correct_predictions += 1
 
@@ -73,3 +74,4 @@ class tournament:
         # Actualizamos los predictores
         self.pshare.update(PC, result, prediction)
         self.gshare.update(PC, result, prediction)
+        
