@@ -35,6 +35,8 @@ if opcion in [1, 2, 3]:
     btb_size = int(input("Ingrese el tamaño del BTB (por defecto 1024): ") or 1024)
     pht_size = int(input("Ingrese el tamaño del PHT (por defecto 1024): ") or 1024)
     step_by_step = input("¿Desea ver el modo paso a paso para BTB y PHT? (s/n): ").lower() == 's'
+else:
+    step_by_step = False  # El perceptrón no usa el modo paso a paso
 
 # Inicializar el predictor seleccionado
 if (opcion == 1):
@@ -105,9 +107,9 @@ for trace in traces_to_process:
 
 # Imprimir resultados del predictor
 predictor.print_results()
-# Después de ejecutar los traces:
-if opcion == 1 or opcion == 2:
+
+# Mostrar el BTB y PHT después de la ejecución (solo para GShare y PShare)
+if opcion in [1, 2]:
     mostrar_btb_pht = input("¿Quieres ver el estado del BTB y PHT? (s/n): ").lower() == 's'
-    predictor.print_results(show_btb_pht=mostrar_btb_pht)
-else:
-    predictor.print_results()
+    if mostrar_btb_pht:
+        predictor.print_results(show_btb_pht=mostrar_btb_pht)
