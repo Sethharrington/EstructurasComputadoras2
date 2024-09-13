@@ -2,10 +2,10 @@ from pshare import *
 from gshare import *
 
 class tournament:
-    def __init__(self, bits_to_index, local_history_size):
+    def __init__(self, bits_to_index, local_history_size, btb_size=1024, pht_size=1024):
         self.name = "tournament"
-        self.pshare = pshare(bits_to_index, local_history_size)
-        self.gshare = gshare(bits_to_index, local_history_size)
+        self.pshare = pshare(bits_to_index, local_history_size, btb_size, pht_size)
+        self.gshare = gshare(bits_to_index, local_history_size, btb_size, pht_size)
         # Contadores de predicciones
         self.amount_pcs = 0
         self.correct_predictions = 0

@@ -44,7 +44,7 @@ if (opcion == 1):
 elif (opcion == 2):
     predictor = gshare(10, 10, btb_size, pht_size)
 elif (opcion == 3):
-    predictor = tournament(10, 10)
+    predictor = tournament(10, 10, btb_size, pht_size)
 elif (opcion == 4):
     predictor = PerceptronPredictor(history_length=8, num_weights=8)
 elif (opcion == 5):
