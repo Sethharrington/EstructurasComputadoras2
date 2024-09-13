@@ -7,12 +7,12 @@ from perceptron_predictor import PerceptronPredictor  # Importando el predictor 
 
 # Variables de ruta
 pathfile = "traces.7z"
-trace_path = "traces/"
+trace_path = "proyecto1/traces/"
 
 # Verificar si la carpeta de traces existe y extraer los archivos si es necesario
-if (not os.path.exists(trace_path)):
-    with py7zr.SevenZipFile(pathfile, 'r') as trace_fh:
-        trace_fh.extractall(path="./proyecto1/")
+# if (not os.path.exists(trace_path)):
+#     with py7zr.SevenZipFile(pathfile, 'r') as trace_fh:
+        # trace_fh.extractall(path="./proyecto1/")
 
 # Listar los traces disponibles
 traces = os.listdir(trace_path)
