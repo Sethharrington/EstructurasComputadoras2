@@ -27,23 +27,28 @@ class tournament(Predictor):
         return self.pshare_prediction if self.tournament_selection <= 1 else self.gshare_prediction # Retorna la predicción del predictor seleccionado
         
     def update(self, PC, result, prediction):
-        result = "T" if result == 1 else "N"                                            # Convertimos result para asegurarnos de que es 'T' o 'N'
+        if result == 1:
+            result_str = "T"
+        elif result == 0:
+            result_str = "N"
+        else:
+            result_str = result                                         # Convertimos result para asegurarnos de que es 'T' o 'N'
         
         # Actualizamos la selección del predictor
-        if result == self.pshare_prediction and result != self.gshare_prediction:       # Si pshare predice bien y gshare mal
+        if result_str == self.pshare_prediction and result_str != self.gshare_prediction:       # Si pshare predice bien y gshare mal
             if self.tournament_selection > 0:
                 self.tournament_selection -= 1
-        elif result != self.pshare_prediction and result == self.gshare_prediction:     # Si pshare predice mal y gshare bien
+        elif result_str != self.pshare_prediction and result_str == self.gshare_prediction:     # Si pshare predice mal y gshare bien
             if self.tournament_selection < 3:
                 self.tournament_selection += 1
         
         self.amount_pcs += 1  
         # Actualizamos el contador de predicciones correctas
-        if result == prediction:
+        if result_str == prediction:
             self.correct_predictions += 1
 
         self.btb.append(PC-16)                                                          # Guardar un PC inventado
 
         # Actualizamos los predictores
-        self.pshare.update(PC, result, prediction) 
-        self.gshare.update(PC, result, prediction)
+        self.pshare.update(PC, result_str, prediction) 
+        self.gshare.update(PC, result_str, prediction)

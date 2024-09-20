@@ -15,7 +15,12 @@ class pshare(Predictor):
         return "T" if self.local_history[self.PC_Index[self.PC_branch]] > 1 else "N"
 
     def update(self, PC, result, prediction):
-        result_str = "T" if result == 1 else "N"
+        if result == 1:
+            result_str = "T"
+        elif result == 0:
+            result_str = "N"
+        else:
+            result_str = result
 
         if result_str == prediction:
             self.correct_predictions += 1
