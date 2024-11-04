@@ -1,13 +1,40 @@
 import gzip
-from cache_opt import *
-from cache_no_opt import *
+from cache_opt import CacheOpt
+from cache_no_opt import CacheNoOpt
 
-cache_capacity = 64
-block_size = 32
-cache_assoc = 4
-file_path = "trace.gz"
+# Función para obtener el tamaño de la caché
+def select_cache_capacity():
+    print("Selecciona el tamaño de la caché en KB:")
+    print("1. 32 KB")
+    print("2. 64 KB")
+    print("3. 128 KB")
+    choice = input("Elige una opción (1/2/3): ").strip()
+    return { '1': 32, '2': 64, '3': 128 }.get(choice, 64)  # Default a 64 KB si la entrada no es válida
 
-# Selección de la versión de caché
+# Función para obtener el tamaño de bloque
+def select_block_size():
+    print("Selecciona el tamaño del bloque en B:")
+    print("1. 32 B")
+    print("2. 64 B")
+    print("3. 128 B")
+    choice = input("Elige una opción (1/2/3): ").strip()
+    return { '1': 32, '2': 64, '3': 128 }.get(choice, 32)  # Default a 32 B si la entrada no es válida
+
+# Función para obtener la asociatividad de la caché
+def select_cache_assoc():
+    print("Selecciona la asociatividad de la caché:")
+    print("1. 4")
+    print("2. 8")
+    print("3. 16")
+    choice = input("Elige una opción (1/2/3): ").strip()
+    return { '1': 4, '2': 8, '3': 16 }.get(choice, 4)  # Default a 4 si la entrada no es válida
+
+# Selección de los parámetros de la caché
+cache_capacity = select_cache_capacity()
+block_size = select_block_size()
+cache_assoc = select_cache_assoc()
+
+# Selección de la versión de caché (optimizada o sin optimización)
 opt_choice = input("¿Quieres usar la versión optimizada? (s/n): ").strip().lower()
 
 if opt_choice == 's':
@@ -17,6 +44,10 @@ else:
 
 cache.print_info()
 
+file_path = "trace.gz"  # Ruta del archivo trace
+process_interval = 100  # Intervalo para procesar pendientes en la versión optimizada
+
+# Se lee el archivo trace y se procesa
 with gzip.open(file_path, 'rt') as trace_fh:
     for line in trace_fh:
         line = line.rstrip()
@@ -24,7 +55,7 @@ with gzip.open(file_path, 'rt') as trace_fh:
         address = int(address, 16)
         cache.access(int(ls), address)
 
-        if opt_choice == 's' and cache.total_access % 100 == 0:
+        if opt_choice == 's' and cache.total_access % process_interval == 0:
             cache.process_pending_requests()
 
 if opt_choice == 's':
