@@ -1,6 +1,6 @@
 from math import log2 ,floor
 
-class cache :
+class CacheNoOpt :
     def __init__ (self, cache_capacity, cache_assoc , block_size, cache_name = "" ):
         self.name = cache_name
         self.total_access =0 

@@ -1,36 +1,33 @@
 import gzip
-from cache import *
+from cache_opt import *
+from cache_no_opt import *
 
-cache_capacity = 64                             # Cache capacity
-block_size = 32                                 # Block size
-cache_assoc = 4                                 # Cache associativity
-file_path = "./proyecto3/trace.gz"              # Trace file
+cache_capacity = 64
+block_size = 32
+cache_assoc = 4
+file_path = "trace.gz"
 
-# Se crea una instancia de la clase cache
-cache = cache(cache_capacity, cache_assoc, block_size)
+# Selección de la versión de caché
+opt_choice = input("¿Quieres usar la versión optimizada? (s/n): ").strip().lower()
 
-# Se imprime la información de la cache
+if opt_choice == 's':
+    cache = CacheOpt(cache_capacity, cache_assoc, block_size)
+else:
+    cache = CacheNoOpt(cache_capacity, cache_assoc, block_size)
+
 cache.print_info()
 
-# i = 0 #SOLO PARA DEBUG
-# Se lee el archivo trace
-with gzip.open(file_path,'rt') as trace_fh:
-
-    # Se recorre el archivo trace
+with gzip.open(file_path, 'rt') as trace_fh:
     for line in trace_fh:
         line = line.rstrip()
+        _, ls, address, _ = line.split(" ")
+        address = int(address, 16)
+        cache.access(int(ls), address)
 
-        # Se obtienen los valores de la línea
-        hash, ls, address, ic  = line.split(" ") # hash, load/store, address, instruction count
+        if opt_choice == 's' and cache.total_access % 100 == 0:
+            cache.process_pending_requests()
 
-        # Se convierte la dirección a entero
-        address = int(address, 16) # Convertir de hexadecimal a entero
+if opt_choice == 's':
+    cache.process_pending_requests()
 
-        # Se simula el acceso a la cache
-        cache.access(ls, address) # Se accede a la cache
-        # i += 1
-        # if i == 10:
-        #     break
-
-# Se imprimen los resultados de la simulación
 cache.print_stats()
