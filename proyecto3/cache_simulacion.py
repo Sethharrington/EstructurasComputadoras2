@@ -45,7 +45,6 @@ else:
 cache.print_info()
 
 file_path = "trace.gz"  # Ruta del archivo trace
-process_interval = 100  # Intervalo para procesar pendientes en la versión optimizada
 
 # Se lee el archivo trace y se procesa
 with gzip.open(file_path, 'rt') as trace_fh:
@@ -55,10 +54,6 @@ with gzip.open(file_path, 'rt') as trace_fh:
         address = int(address, 16)
         cache.access(int(ls), address)
 
-        if opt_choice == 's' and cache.total_access % process_interval == 0:
-            cache.process_pending_requests()
-
-if opt_choice == 's':
-    cache.process_pending_requests()
-
 cache.print_stats()
+
+

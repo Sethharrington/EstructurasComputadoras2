@@ -40,6 +40,9 @@ class CacheNoOpt :
         self.result_str +=f"\tAccesos: {self.total_access}\n\tMisses: {self.total_misses}\n\tMiss Rate: {miss_rate}%"
         print(self.result_str)
     
+    
+    
+    
     def access (self, ls ,address):
         """
         """
