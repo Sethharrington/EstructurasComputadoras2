@@ -22,7 +22,7 @@ int FindNumber(vector<int> arrayNumber, int numberToSearch)
 int main()
 {
     vector<int> numerosPrimos;
-    int size = 10000;
+    int size = 100;
     int arraySize = size;
     int numeros[size];
 
