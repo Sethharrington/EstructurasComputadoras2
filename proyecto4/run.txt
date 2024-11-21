@@ -1,0 +1,1 @@
+g++ -fopenmp -o criba criba_eratostenes.cpp
